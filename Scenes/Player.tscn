@@ -1,0 +1,99 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/HealthComponent.cs" id="health"]
+[ext_resource type="Script" path="res://Scripts/ShootComponent.cs" id="shoot"]
+[ext_resource type="Script" path="res://Scripts/VisibilityComponent.cs" id="sight"]
+[ext_resource type="Script" path="res://Scripts/MoveComponent.cs" id="move"]
+[ext_resource type="Script" path="res://Scripts/DamagingComponent.cs" id="damage"]
+[ext_resource type="Script" path="res://Scripts/PlayerController.cs" id="controller"]
+[ext_resource type="Script" path="res://Scripts/BuildComponent.cs" id="build"]
+[ext_resource type="Script" path="res://Scripts/BuildableComponent.cs" id="buildable"]
+[ext_resource type="PackedScene" path="res://Scenes/PlayerBullet.tscn" id="bullet"]
+[ext_resource type="PackedScene" path="res://Scenes/TowerGreen.tscn" id="tower1"]
+[ext_resource type="PackedScene" path="res://Scenes/TowerExplosion.tscn" id="tower2"]
+[ext_resource type="PackedScene" path="res://Scenes/TowerFreeze.tscn" id="tower3"]
+
+[sub_resource type="CylinderShape3D" id="BodyShape"]
+radius = 0.45
+height = 1.6
+
+[sub_resource type="CylinderMesh" id="BodyMesh"]
+top_radius = 0.45
+bottom_radius = 0.45
+height = 1.4
+
+[sub_resource type="BoxMesh" id="BarrelMesh"]
+size = Vector3(0.25, 0.25, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="BodyMaterial"]
+albedo_color = Color(0.35, 0.95, 0.45, 1)
+roughness = 0.65
+
+[sub_resource type="StandardMaterial3D" id="AccentMaterial"]
+albedo_color = Color(0.9, 1, 0.85, 1)
+emission_enabled = true
+emission = Color(0.9, 1, 0.85, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="SphereShape3D" id="SightShape"]
+radius = 11.0
+
+[sub_resource type="SphereShape3D" id="ContactShape"]
+radius = 1.35
+
+[sub_resource type="CylinderMesh" id="SlowMesh"]
+top_radius = 0.95
+bottom_radius = 0.95
+height = 0.1
+
+[sub_resource type="StandardMaterial3D" id="SlowMaterial"]
+shading_mode = 0
+albedo_color = Color(0.15, 0.9, 1, 1)
+
+[node name="Player" type="CharacterBody3D" groups=["Players", "PlayerCharacter"]]
+collision_layer = 1
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("BodyShape")
+
+[node name="TowerBaseVisual" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.7, 0)
+mesh = SubResource("BodyMesh")
+material_override = SubResource("BodyMaterial")
+
+[node name="MuzzleVisual" type="Node3D" parent="."]
+
+[node name="MuzzleMarker" type="Marker3D" parent="MuzzleVisual"]
+position = Vector3(0, 0.9, -1.1)
+
+[node name="Barrel" type="MeshInstance3D" parent="MuzzleVisual"]
+position = Vector3(0, 0.9, -0.65)
+mesh = SubResource("BarrelMesh")
+material_override = SubResource("AccentMaterial")
+
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("health")
+MaxHealth = 40
+MetalReward = 0
+
+[node name="PlayerController" type="Node" parent="."]
+script = ExtResource("controller")
+
+[node name="MoveComponent" type="Node" parent="."]
+script = ExtResource("move")
+Speed = 3.2
+PlayerControlled = true
+
+[node name="ShootComponent" type="Node" parent="." node_paths=PackedStringArray("MuzzleMarker")]
+script = ExtResource("shoot")
+BulletScene = ExtResource("bullet")
+ShotInterval = 0.1875
+MuzzleMarker = NodePath("../MuzzleVisual/MuzzleMarker")
+ManualControl = true
+
+[node name="BuildComponent" type="Node" parent="."]
+script = ExtResource("build")
+TowerScenes = Array[PackedScene]([ExtResource("tower1"), ExtResource("tower2"), ExtResource("tower3")])

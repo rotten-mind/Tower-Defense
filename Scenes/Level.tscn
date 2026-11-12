@@ -1,0 +1,166 @@
+[gd_scene format=3 uid="uid://8x3ldxw8l6mo"]
+
+[ext_resource type="PackedScene" path="res://Scenes/Core.tscn" id="core"]
+[ext_resource type="PackedScene" path="res://Scenes/Crawler.tscn" id="crawler"]
+[ext_resource type="PackedScene" uid="uid://b0of7ijmeoqdu" path="res://Scenes/TowerRed.tscn" id="enemy"]
+[ext_resource type="Script" uid="uid://dmec1kcl4j3vj" path="res://Scripts/GameManager.cs" id="game"]
+[ext_resource type="Script" uid="uid://cppylr0c2vl5s" path="res://Scripts/GameHud.cs" id="hud"]
+[ext_resource type="PackedScene" path="res://Scenes/Player.tscn" id="player"]
+[ext_resource type="PackedScene" uid="uid://d1w3iqwy6ovlh" path="res://Scenes/TowerGreen.tscn" id="tower"]
+[ext_resource type="Script" uid="uid://dw51dowdjq03k" path="res://Scripts/WaveComponent.cs" id="wave"]
+
+[sub_resource type="BoxShape3D" id="GroundShape"]
+size = Vector3(40, 0.2, 40)
+
+[sub_resource type="StandardMaterial3D" id="GroundMaterial"]
+albedo_color = Color(0.36, 0.42, 0.46, 1)
+
+[sub_resource type="BoxMesh" id="GroundMesh"]
+size = Vector3(40, 0.2, 40)
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.24, 0.3, 0.36, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.95, 0.97, 1, 1)
+ambient_light_energy = 0.8
+
+[sub_resource type="StyleBoxFlat" id="PanelStyle"]
+content_margin_left = 40.0
+content_margin_top = 28.0
+content_margin_right = 40.0
+content_margin_bottom = 28.0
+bg_color = Color(0.03, 0.05, 0.09, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.75, 0.8, 1)
+
+[node name="Level" type="Node3D" unique_id=660547583]
+script = ExtResource("game")
+
+[node name="Ground" type="StaticBody3D" parent="." unique_id=1976935201]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=390476646]
+shape = SubResource("GroundShape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=275015624]
+material_override = SubResource("GroundMaterial")
+mesh = SubResource("GroundMesh")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=966643050]
+transform = Transform3D(1, 0, 0, 0, 0.53908086, 0.842254, 0, -0.842254, 0.53908086, 0, 32, 20)
+projection = 1
+current = true
+size = 44.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=94400756]
+transform = Transform3D(0.90630776, 0.36599818, -0.21130912, 0, 0.49999997, 0.86602545, 0.42261827, -0.7848856, 0.45315385, 0, 0, 0)
+light_energy = 1.15
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1967892653]
+environment = SubResource("Environment")
+
+[node name="Core" parent="." unique_id=1028075529 instance=ExtResource("core")]
+
+[node name="TowerGreen" parent="." unique_id=542683401 instance=ExtResource("tower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 2)
+
+[node name="Player" parent="." unique_id=373825348 instance=ExtResource("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+
+[node name="WaveComponent" type="Node" parent="." unique_id=1290012652]
+script = ExtResource("wave")
+RangedEnemyScene = ExtResource("enemy")
+CrawlerScene = ExtResource("crawler")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1423463842]
+script = ExtResource("hud")
+
+[node name="Margin" type="MarginContainer" parent="HUD" unique_id=984605990]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 12.0
+offset_right = -20.0
+offset_bottom = 88.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/Margin" unique_id=1148355689]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Stats" type="Label" parent="HUD/Margin/VBox" unique_id=864321211]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 1, 0.8, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.04, 0.06, 0.9)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 22
+
+[node name="Wave" type="Label" parent="HUD/Margin/VBox" unique_id=1528932063]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.02, 0.04, 0.06, 0.9)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 18
+
+[node name="Notice" type="Label" parent="HUD/Margin/VBox" unique_id=651204210]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.35, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.04, 0.06, 0.9)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 16
+
+[node name="Bottom" type="MarginContainer" parent="HUD" unique_id=1882046634]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -72.0
+offset_right = -20.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/Bottom" unique_id=806399969]
+layout_mode = 2
+mouse_filter = 2
+alignment = 2
+
+[node name="Build" type="Label" parent="HUD/Bottom/VBox" unique_id=883833292]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.02, 0.04, 0.06, 0.9)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 17
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ResultCenter" type="CenterContainer" parent="HUD" unique_id=1804553593]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="HUD/ResultCenter" unique_id=1398883859]
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="Result" type="Label" parent="HUD/ResultCenter/Panel" unique_id=1020584837]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 1, 0.95, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.04, 0.06, 0.9)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1

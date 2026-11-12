@@ -1,0 +1,12 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Local .NET and editor files
+.vs/
+.idea/
+bin/
+obj/
+
+# Import metadata left after renaming the UML image
+/UML.import

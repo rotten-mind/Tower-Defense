@@ -1,0 +1,103 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/HealthComponent.cs" id="health"]
+[ext_resource type="Script" path="res://Scripts/ShootComponent.cs" id="shoot"]
+[ext_resource type="Script" path="res://Scripts/VisibilityComponent.cs" id="sight"]
+[ext_resource type="Script" path="res://Scripts/MoveComponent.cs" id="move"]
+[ext_resource type="Script" path="res://Scripts/DamagingComponent.cs" id="damage"]
+[ext_resource type="Script" path="res://Scripts/PlayerController.cs" id="controller"]
+[ext_resource type="Script" path="res://Scripts/BuildComponent.cs" id="build"]
+[ext_resource type="Script" path="res://Scripts/BuildableComponent.cs" id="buildable"]
+[ext_resource type="PackedScene" path="res://Scenes/FreezeBullet.tscn" id="bullet"]
+
+
+[sub_resource type="CylinderShape3D" id="BodyShape"]
+radius = 0.7
+height = 1.6
+
+[sub_resource type="CylinderMesh" id="BodyMesh"]
+top_radius = 0.7
+bottom_radius = 0.7
+height = 1.4
+
+[sub_resource type="BoxMesh" id="BarrelMesh"]
+size = Vector3(0.25, 0.25, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="BodyMaterial"]
+albedo_color = Color(0.1, 0.55, 0.3, 1)
+roughness = 0.65
+
+[sub_resource type="StandardMaterial3D" id="AccentMaterial"]
+albedo_color = Color(0.2, 1, 0.9, 1)
+emission_enabled = true
+emission = Color(0.2, 1, 0.9, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="SphereShape3D" id="SightShape"]
+radius = 11.0
+
+[sub_resource type="SphereShape3D" id="ContactShape"]
+radius = 1.35
+
+[sub_resource type="CylinderMesh" id="SlowMesh"]
+top_radius = 0.95
+bottom_radius = 0.95
+height = 0.1
+
+[sub_resource type="StandardMaterial3D" id="SlowMaterial"]
+shading_mode = 0
+albedo_color = Color(0.15, 0.9, 1, 1)
+
+[node name="TowerFreeze" type="StaticBody3D" groups=["Players", "Towers"]]
+collision_layer = 1
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("BodyShape")
+
+[node name="TowerBaseVisual" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.7, 0)
+mesh = SubResource("BodyMesh")
+material_override = SubResource("BodyMaterial")
+
+[node name="MuzzleVisual" type="Node3D" parent="."]
+
+[node name="MuzzleMarker" type="Marker3D" parent="MuzzleVisual"]
+position = Vector3(0, 0.9, -1.1)
+
+[node name="Barrel" type="MeshInstance3D" parent="MuzzleVisual"]
+position = Vector3(0, 0.9, -0.65)
+mesh = SubResource("BarrelMesh")
+material_override = SubResource("AccentMaterial")
+
+[node name="CoolingFin" type="MeshInstance3D" parent="MuzzleVisual"]
+position = Vector3(0, 1.6, 0)
+rotation_degrees = Vector3(0, 0, 90)
+mesh = SubResource("BarrelMesh")
+material_override = SubResource("AccentMaterial")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("health")
+MaxHealth = 28
+MetalReward = 28
+
+[node name="VisibilityComponent" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("sight")
+TargetGroup = "Enemies"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="VisibilityComponent"]
+position = Vector3(0, 0.8, 0)
+shape = SubResource("SightShape")
+
+[node name="ShootComponent" type="Node" parent="." node_paths=PackedStringArray("MuzzleMarker", "Visibility")]
+script = ExtResource("shoot")
+BulletScene = ExtResource("bullet")
+ShotInterval = 0.8
+MuzzleMarker = NodePath("../MuzzleVisual/MuzzleMarker")
+Visibility = NodePath("../VisibilityComponent")
+[node name="BuildableComponent" type="Node" parent="."]
+script = ExtResource("buildable")
+MetalCost = 55
